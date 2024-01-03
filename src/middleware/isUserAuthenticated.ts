@@ -20,7 +20,7 @@ const isUserAuthenticated = (
     const accessTokenData = decodeAccessToken(token);
 
     // Adding token data to req
-    req.body.accessTokenData = accessTokenData;
+    res.locals = accessTokenData;
 
     return next();
   } catch (err) {
