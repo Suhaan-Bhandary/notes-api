@@ -24,6 +24,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('note_id', 'serial', (col) =>
       col.references('note.id').onDelete('cascade').notNull(),
     )
+    .addPrimaryKeyConstraint('note_shared_pk', ['user_email', 'note_id'])
     .execute();
 }
 
