@@ -44,3 +44,18 @@ export const getNote = async (noteId: number, email: string) => {
     .where((eb) => eb('user_email', '=', email).and('note.id', '=', noteId))
     .executeTakeFirst();
 };
+
+export const isCreator = async (noteId: number, email: string) => {
+  return await db
+    .selectFrom('note_shared')
+    .select('is_creator')
+    .where((eb) => eb('note_id', '=', noteId).and('user_email', '=', email))
+    .executeTakeFirst();
+};
+
+export const deleteNote = async (noteId: number) => {
+  return await db
+    .deleteFrom('note')
+    .where('id', '=', noteId)
+    .executeTakeFirstOrThrow();
+};

@@ -8,6 +8,7 @@ import {
   InternalServerError,
   NotFoundError,
   SuccessResponse,
+  UnauthorizedError,
 } from '../utils/apiResponse';
 import { createNoteValidation } from '../validators/auth/createNote.validator';
 
@@ -84,8 +85,32 @@ export const updateNote = (req: Request, res: Response) => {
   return SuccessResponse(res, { message: 'updateNote' });
 };
 
-export const deteleNote = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'deteleNote' });
+// Check if note available, check if user is owner
+export const deteleNote = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+
+    const noteId = parseInt(req.params['id']);
+
+    const isCreatorRes = await notesService.isCreator(noteId, userEmail);
+    if (!isCreatorRes) {
+      return NotFoundError(res, { message: 'Note doesnot exits' });
+    }
+
+    if (!isCreatorRes.is_creator) {
+      return UnauthorizedError(res, {
+        message: 'Unauthorized, Cannot delete the post.',
+      });
+    }
+
+    // Get if the user is allowed to see the note, if yes get the note
+    await notesService.deleteNote(noteId);
+    return SuccessResponse(res, { message: 'Deleted note successfully' });
+  } catch (error) {
+    console.log(error);
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
 
 export const shareNote = (req: Request, res: Response) => {
