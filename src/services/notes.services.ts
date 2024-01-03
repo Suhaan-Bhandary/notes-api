@@ -1,5 +1,5 @@
 import { db } from '../db/db';
-import { NewNote } from '../db/types/note';
+import { NewNote, NoteUpdate } from '../db/types/note';
 
 export const createNote = async (note: NewNote, email: string) => {
   // create the note
@@ -57,5 +57,13 @@ export const deleteNote = async (noteId: number) => {
   return await db
     .deleteFrom('note')
     .where('id', '=', noteId)
+    .executeTakeFirstOrThrow();
+};
+
+export const updateNote = async (noteId: number, note: NoteUpdate) => {
+  return await db
+    .updateTable('note')
+    .set(note)
+    .where('note.id', '=', noteId)
     .executeTakeFirstOrThrow();
 };

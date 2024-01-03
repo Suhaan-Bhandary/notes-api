@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ValidationError } from 'joi';
-import { NewNote } from '../db/types/note';
+import { NewNote, NoteUpdate } from '../db/types/note';
 import { notesService } from '../services';
 import { AccessToken } from '../types/accessToken';
 import {
@@ -10,7 +10,8 @@ import {
   SuccessResponse,
   UnauthorizedError,
 } from '../utils/apiResponse';
-import { createNoteValidation } from '../validators/auth/createNote.validator';
+import { createNoteValidation } from '../validators/notes/createNote.validator';
+import { updateNoteValidation } from '../validators/notes/updateNote.validator';
 
 export const getNotes = async (req: Request, res: Response) => {
   try {
@@ -81,8 +82,42 @@ export const createNote = async (req: Request, res: Response) => {
   }
 };
 
-export const updateNote = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'updateNote' });
+export const updateNote = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+
+    const noteId = parseInt(req.params['id']);
+
+    // Validating the body
+    const note = (await updateNoteValidation.validateAsync(
+      req.body,
+    )) as NoteUpdate;
+
+    const isCreatorRes = await notesService.isCreator(noteId, userEmail);
+    if (!isCreatorRes) {
+      return NotFoundError(res, { message: 'Note doesnot exits' });
+    }
+
+    if (!isCreatorRes.is_creator) {
+      return UnauthorizedError(res, {
+        message: 'Unauthorized, Cannot Update the post.',
+      });
+    }
+
+    // Create the note in Database
+    await notesService.updateNote(noteId, note);
+
+    return SuccessResponse(res, { message: 'Note updated successfully.' });
+  } catch (error) {
+    console.log(error);
+
+    if (error instanceof ValidationError) {
+      return BadRequestError(res, { message: error.message });
+    }
+
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
 
 // Check if note available, check if user is owner
