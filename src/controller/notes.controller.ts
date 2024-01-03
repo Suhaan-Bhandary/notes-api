@@ -123,7 +123,7 @@ export const updateNote = async (req: Request, res: Response) => {
 };
 
 // Check if note available, check if user is owner
-export const deteleNote = async (req: Request, res: Response) => {
+export const deleteNote = async (req: Request, res: Response) => {
   try {
     const accessTokenData = res.locals as AccessToken;
     const userEmail = accessTokenData.email;
