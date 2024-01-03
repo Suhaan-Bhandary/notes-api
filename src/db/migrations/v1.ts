@@ -1,4 +1,4 @@
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
@@ -13,6 +13,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('title', 'text', (col) => col.notNull())
     .addColumn('description', 'text')
+    .execute();
+
+  await db.schema
+    .createIndex('text-search-index-title-and-description')
+    .on('note')
+    .using('gin')
+    .expression(sql`lower(title)`)
+    .expression(sql`lower(description)`)
     .execute();
 
   await db.schema
@@ -32,4 +40,7 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('user').execute();
   await db.schema.dropTable('note').execute();
   await db.schema.dropTable('note_shared').execute();
+  await db.schema
+    .dropIndex('text-search-index-title-and-description')
+    .execute();
 }

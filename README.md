@@ -5,6 +5,8 @@
 Setup the postgresql:
 createdb notes
 createdb notes-test
+CREATE EXTENSION pg_trgm;
+CREATE EXTENSION btree_gin;
 
 Setup the .env
 

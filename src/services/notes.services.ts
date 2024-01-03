@@ -78,3 +78,23 @@ export const shareNote = async (noteId: number, shareEmail: string) => {
     })
     .executeTakeFirstOrThrow();
 };
+
+export const getNotesByQuery = async (query: string, email: string) => {
+  const lowerQuery = query.toLowerCase();
+  return await db
+    .selectFrom('note_shared')
+    .innerJoin('note', 'note.id', 'note_shared.note_id')
+    .select('note.id')
+    .select('note.title')
+    .select('note.description')
+    .select('is_creator')
+    .where('user_email', '=', email)
+    .where((eb) =>
+      eb('note.title', 'like', '%' + lowerQuery + '%').or(
+        'note.description',
+        'like',
+        '%' + lowerQuery + '%',
+      ),
+    )
+    .execute();
+};

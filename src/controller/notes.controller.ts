@@ -55,8 +55,23 @@ export const getNoteById = async (req: Request, res: Response) => {
   }
 };
 
-export const searchNotes = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'searchNotes' });
+export const searchNotes = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+
+    const query = req.query['q'];
+    if (typeof query !== 'string') {
+      return BadRequestError(res, { message: 'Please provide a valid query' });
+    }
+
+    // Find notes
+    const notes = await notesService.getNotesByQuery(query, userEmail);
+    return SuccessResponse(res, { message: 'Notes', notes });
+  } catch (error) {
+    console.log(error);
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
 
 export const createNote = async (req: Request, res: Response) => {
