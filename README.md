@@ -12,3 +12,8 @@ Postman link: https://www.postman.com/mission-architect-94960085/workspace/publi
 
 Used Joi to for validation
 Used bycrypt to hash the password
+Added SECRET_KEY in the env
+
+Added jwt webtoken to create access token
+
+In Postman update the token before using on local server
