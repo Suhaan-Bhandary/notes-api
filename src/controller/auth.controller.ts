@@ -4,7 +4,7 @@ import { ValidationError } from 'joi';
 import { NoResultError } from 'kysely';
 import { User } from '../db/types/user';
 import { isDuplicateKeyError } from '../errors/db.errors';
-import { createUser, getUserPassword } from '../services/auth.services';
+import { authService } from '../services';
 import {
   BadRequestError,
   InternalServerError,
@@ -28,7 +28,7 @@ export const signUp = async (req: Request, res: Response) => {
     };
 
     // Create the user in Database
-    await createUser(user);
+    await authService.createUser(user);
 
     return SuccessResponse(res, { message: 'User signed-up successfully.' });
   } catch (error) {
@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response) => {
     };
 
     // Get the user and compare the passwords
-    const hashedPassword = await getUserPassword(user.email);
+    const hashedPassword = await authService.getUserPassword(user.email);
     const isPasswordCorrect = await bcrypt.compare(
       user.password,
       hashedPassword,
