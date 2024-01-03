@@ -67,3 +67,14 @@ export const updateNote = async (noteId: number, note: NoteUpdate) => {
     .where('note.id', '=', noteId)
     .executeTakeFirstOrThrow();
 };
+
+export const shareNote = async (noteId: number, shareEmail: string) => {
+  return await db
+    .insertInto('note_shared')
+    .values({
+      is_creator: false,
+      note_id: noteId,
+      user_email: shareEmail,
+    })
+    .executeTakeFirstOrThrow();
+};

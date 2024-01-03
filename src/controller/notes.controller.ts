@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ValidationError } from 'joi';
 import { NewNote, NoteUpdate } from '../db/types/note';
+import { isForeignKeyError } from '../errors/db.errors';
 import { notesService } from '../services';
 import { AccessToken } from '../types/accessToken';
 import {
@@ -11,6 +12,7 @@ import {
   UnauthorizedError,
 } from '../utils/apiResponse';
 import { createNoteValidation } from '../validators/notes/createNote.validator';
+import { shareNoteValidation } from '../validators/notes/shareNote.validator';
 import { updateNoteValidation } from '../validators/notes/updateNote.validator';
 
 export const getNotes = async (req: Request, res: Response) => {
@@ -96,7 +98,7 @@ export const updateNote = async (req: Request, res: Response) => {
 
     const isCreatorRes = await notesService.isCreator(noteId, userEmail);
     if (!isCreatorRes) {
-      return NotFoundError(res, { message: 'Note doesnot exits' });
+      return NotFoundError(res, { message: "Note doesn't exists" });
     }
 
     if (!isCreatorRes.is_creator) {
@@ -130,7 +132,7 @@ export const deteleNote = async (req: Request, res: Response) => {
 
     const isCreatorRes = await notesService.isCreator(noteId, userEmail);
     if (!isCreatorRes) {
-      return NotFoundError(res, { message: 'Note doesnot exits' });
+      return NotFoundError(res, { message: "Note doesn't exists" });
     }
 
     if (!isCreatorRes.is_creator) {
@@ -148,6 +150,51 @@ export const deteleNote = async (req: Request, res: Response) => {
   }
 };
 
-export const shareNote = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'shareNote' });
+export const shareNote = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+    const noteId = parseInt(req.params['id']);
+
+    // Validating the body
+    const bodyData = (await shareNoteValidation.validateAsync(req.body)) as {
+      shareEmail: string;
+    };
+
+    if (bodyData.shareEmail === userEmail) {
+      return BadRequestError(res, {
+        message: 'Cannot share the note to the creator itself.',
+      });
+    }
+
+    const isCreatorRes = await notesService.isCreator(noteId, userEmail);
+    if (!isCreatorRes) {
+      return NotFoundError(res, { message: "Note doesn't exists" });
+    }
+
+    if (!isCreatorRes.is_creator) {
+      return UnauthorizedError(res, {
+        message: 'Unauthorized, Cannot Share the post.',
+      });
+    }
+
+    // Create the note in Database
+    await notesService.shareNote(noteId, bodyData.shareEmail);
+
+    return SuccessResponse(res, { message: 'Note shared successfully.' });
+  } catch (error) {
+    console.log(error);
+
+    if (isForeignKeyError(error)) {
+      return BadRequestError(res, {
+        message: "Cannot Share, user with the email doesn't exists.",
+      });
+    }
+
+    if (error instanceof ValidationError) {
+      return BadRequestError(res, { message: error.message });
+    }
+
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
