@@ -10,8 +10,19 @@ import {
 } from '../utils/apiResponse';
 import { createNoteValidation } from '../validators/auth/createNote.validator';
 
-export const getNotes = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'getNotes' });
+export const getNotes = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+
+    // Find notes
+    const notes = await notesService.getNotes(userEmail);
+
+    return SuccessResponse(res, { message: 'User Notes.', notes });
+  } catch (error) {
+    console.log(error);
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
 
 export const getNoteById = (req: Request, res: Response) => {
