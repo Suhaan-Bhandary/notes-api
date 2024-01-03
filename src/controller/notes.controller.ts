@@ -6,6 +6,7 @@ import { AccessToken } from '../types/accessToken';
 import {
   BadRequestError,
   InternalServerError,
+  NotFoundError,
   SuccessResponse,
 } from '../utils/apiResponse';
 import { createNoteValidation } from '../validators/auth/createNote.validator';
@@ -25,8 +26,29 @@ export const getNotes = async (req: Request, res: Response) => {
   }
 };
 
-export const getNoteById = (req: Request, res: Response) => {
-  return SuccessResponse(res, { message: 'getNoteById' });
+export const getNoteById = async (req: Request, res: Response) => {
+  try {
+    const accessTokenData = res.locals as AccessToken;
+    const userEmail = accessTokenData.email;
+
+    const noteId = parseInt(req.params['id']);
+
+    console.log(req.params['id'], userEmail);
+
+    // Get if the user is allowed to see the note, if yes get the note
+    const note = await notesService.getNote(noteId, userEmail);
+
+    if (!note) {
+      return NotFoundError(res, {
+        message: 'Note not Found or is not shared.',
+      });
+    }
+
+    return SuccessResponse(res, { message: 'Note Found', note });
+  } catch (error) {
+    console.log(error);
+    return InternalServerError(res, { message: 'Something went wrong.' });
+  }
 };
 
 export const searchNotes = (req: Request, res: Response) => {
