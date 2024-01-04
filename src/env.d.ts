@@ -12,6 +12,11 @@ declare global {
       DATABASE_PORT: number;
 
       SECRET_KEY: string;
+
+      WINDOW_SIZE_NON_AUTH_MIN: number;
+      LIMIT_NON_AUTH: number;
+      WINDOW_SIZE_AUTH_MIN: number;
+      LIMIT_AUTH: number;
     }
   }
 }

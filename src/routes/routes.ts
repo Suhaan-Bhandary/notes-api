@@ -1,13 +1,14 @@
 import { Router } from 'express';
+import { authLimiter, nonAuthLimiter } from '../config/rate-limiter';
 import isUserAuthenticated from '../middleware/isUserAuthenticated';
 import authRouter from './auth.routes';
 import notesRouter from './notes.routes';
 
 const router = Router();
 
-router.use('/auth', authRouter);
+router.use('/auth', nonAuthLimiter, authRouter);
 
 // Using middleware here as all the notes routes require auth
-router.use('/notes', isUserAuthenticated, notesRouter);
+router.use('/notes', authLimiter, isUserAuthenticated, notesRouter);
 
 export default router;
