@@ -14,5 +14,6 @@
     "skipLibCheck": true,
     "noPropertyAccessFromIndexSignature": true
   },
-  "exclude": ["tools", "build"]
+  "include": ["babel.config", "src/env.d", "src/**/*"],
+  "exclude": ["tools", "./build/**/*"]
 }
