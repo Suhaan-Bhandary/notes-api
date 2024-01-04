@@ -14,7 +14,7 @@
     "lint:fix": "eslint --fix .",
     "db:migrate:latest": "ts-node --files ./src/db/migrate.ts",
     "db:migrate:test": "ts-node --files ./src/db/migrateDummyDB.ts",
-    "test:jest": "jest --setupFiles=./src/tests/dotenv-config.ts",
+    "test:jest": "jest --runInBand --setupFiles=./src/tests/dotenv-config.ts",
     "test": "npm-run-all db:migrate:test test:jest"
   },
   "keywords": [],

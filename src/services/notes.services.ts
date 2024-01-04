@@ -10,6 +10,8 @@ export const createNote = async (note: NewNote, email: string) => {
     .executeTakeFirstOrThrow()
     .then((note) => note.id);
 
+  console.log(note_id, email);
+
   // Added user to note_shared table
   await db
     .insertInto('note_shared')

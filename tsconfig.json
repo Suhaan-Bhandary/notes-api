@@ -15,5 +15,5 @@
     "noPropertyAccessFromIndexSignature": true
   },
   "include": ["babel.config", "src/env.d", "src/**/*"],
-  "exclude": ["tools", "./build/**/*"]
+  "exclude": ["tools", "./build/**/*", "./src/tests"]
 }

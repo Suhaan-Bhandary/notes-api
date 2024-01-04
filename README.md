@@ -4,7 +4,12 @@
 
 Setup the postgresql:
 createdb notes
+\c notes
+CREATE EXTENSION pg_trgm;
+CREATE EXTENSION btree_gin;
+
 createdb notes-test
+\c notes-test
 CREATE EXTENSION pg_trgm;
 CREATE EXTENSION btree_gin;
 
