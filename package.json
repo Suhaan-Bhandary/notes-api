@@ -12,8 +12,10 @@
     "production": "npm run build && npm run start",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix .",
-    "db:migrate:latest": "ts-node ./src/db/migrate.ts",
-    "test": "jest --setupFiles=./src/tests/dotenv-config.ts"
+    "db:migrate:latest": "ts-node --files ./src/db/migrate.ts",
+    "db:migrate:test": "ts-node --files ./src/db/migrateDummyDB.ts",
+    "test:jest": "jest --setupFiles=./src/tests/dotenv-config.ts",
+    "test": "npm-run-all db:migrate:test test:jest"
   },
   "keywords": [],
   "author": "",
