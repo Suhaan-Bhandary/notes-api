@@ -37,8 +37,6 @@ export const getNoteById = async (req: Request, res: Response) => {
 
     const noteId = parseInt(req.params['id']);
 
-    console.log(req.params['id'], userEmail);
-
     // Get if the user is allowed to see the note, if yes get the note
     const note = await notesService.getNote(noteId, userEmail);
 
