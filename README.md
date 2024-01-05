@@ -114,7 +114,7 @@ LIMIT_AUTH=20
 
 ### Migrating the Database
 
-Befor running the API we have to first migrate the Database. For this run `npm run npm run db:migrate:latest`, this command will migrate the tables to the database.
+Before running the API we have to first migrate the Database. For this run `npm run db:migrate:latest`, this command will migrate the tables to the database.
 
 ### Running the API
 
