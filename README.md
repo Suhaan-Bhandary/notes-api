@@ -58,13 +58,13 @@ Used for testing, it provides different methods for easily checking and testing 
 - Create database notes and create extension (used in indexing).
 
   ```bash
-      createdb notes
+  createdb notes
 
 
-      <!-- In psql, go to newly creates notes db -->
-      \c notes;
-      CREATE EXTENSION pg_trgm;
-      CREATE EXTENSION btree_gin;
+  <!-- In psql, go to newly creates notes db -->
+  \c notes;
+  CREATE EXTENSION pg_trgm;
+  CREATE EXTENSION btree_gin;
   ```
 
 - Create database notes-test and create extension (used in indexing), similar to before.
@@ -85,7 +85,7 @@ Used for testing, it provides different methods for easily checking and testing 
 
 - Go to https://github.com/Suhaan-Bhandary/notes-api and clone the Repo.
 - cd to notes-api directory once cloned.
-- Run the command: `bash npm i`
+- Run the command: `npm i`
 - Create .env in the root of the project where .test.env is present and below is an example of the env file, replace values as required, eg: Database Config values.(Don't change DATABASE value if created notes)
 
 ```env
@@ -114,16 +114,16 @@ LIMIT_AUTH=20
 
 ### Migrating the Database
 
-Befor running the API we have to first migrate the Database. For this run `bash npm run npm run db:migrate:latest`, this command will migrate the tables to the database.
+Befor running the API we have to first migrate the Database. For this run `npm run npm run db:migrate:latest`, this command will migrate the tables to the database.
 
 ### Running the API
 
-- In Development: `bash npm run dev`
-- In Production: `bash npm run build && npm run start`
+- In Development: `npm run dev`
+- In Production: `npm run build && npm run start`
 
 ### Running the tests
 
-- Tests: `bash npm run test`
+- Tests: `npm run test`
 
 ### Using the API on Postman
 
